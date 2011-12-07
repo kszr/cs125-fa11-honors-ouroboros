@@ -1,5 +1,6 @@
 /**
- * @author chattrj3, nayudu 2
+ * The Class that defines the game, and implements all of the classes.
+ * @author chattrj3, nayudu2, sgupta40
  */
 import java.awt.event.*;
 
@@ -7,91 +8,94 @@ public class TheGame {
 
 	private static int direction;
 
+	/**
+	 * The main function that implements all the classes
+	 * @param args
+	 */
 	public static void main(String[] args) {
 
+		HighScore.SetScoreArray(); //Initialize the scores
+		
+		Zen.create(900, 480, ""); // Set the screen width and height
 
-		Zen.create(900, 480, "");
+		BigSnake snake = new BigSnake(); // Define a new snake
+		
+		snake.add(); // Add one part to the snake
 
-		BigSnake snake = new BigSnake();
-		snake.add();
+		Snake head = snake.getHead(); // Get the head of the snake
 
-		Snake head = snake.getHead();
-
-		while(!MenuOptions.Menu());
-		MenuOptions.DrawInter();
-		int SnakeType = MenuOptions.SnakeChoice();
+		while(!MenuOptions.Menu()); //Run menu till an option is selected
+		Zen.resetClick(); //Reset the values of mouseclicks
+		int SnakeType = MenuOptions.SnakeChoice(); //Open the avatar selection menu
 
 
-		FoodList food = new FoodList();
+		FoodList food = new FoodList(); //Make some new food
 
+		/*
+		 * Start Zen Graphics with the game.
+		 */
 		while(Zen.isRunning()) {
 
 			snake.move(setDirection());
 			snake.draw(SnakeType, direction);
 
-			int points=0;
+			int points = 0;
 
 			Food eaten = food.eaten(head);
-
+			
+			/*
+			 * Check if the food is eaten
+			 */
 			if(eaten!=null && !eaten.getFlag()) {
 				if(eaten instanceof LifeFood && snake.getLives()<5) snake.updateLives();
 				else if(eaten instanceof RedFood) points = ((RedFood)eaten).getPoints();
 				else if(eaten instanceof GreenFood) points = ((GreenFood)eaten).getPoints();
 				else if(eaten instanceof BlueFood) points = ((BlueFood)eaten).getPoints();
 				else points=0;
-				System.out.println(points);
 				eaten.setFlag();
 			}
 
-
-			for(int j=0; j<points; j++)
+			//Increase the length of the snake based on points
+			for(int j = 0; j < points; j++)
 				snake.add();
 			snake.drawLives(660, 200);
 			food.setEaten(head.getX(), head.getY());
 			
-			/*int pointie=0;
-
-			for(int i=0; i<food.GetSize(); i++) {
-				Food now = food.getFoodAt(i);
-	
-				if(!now.isEaten(head.getX(), head.getY()) && !now.getFlag()) {
-					if(now instanceof LifeFood && snake.getLives()<5) snake.updateLives();
-					else if(now instanceof RedFood) pointie = ((RedFood)now).getPoints();
-					else if(now instanceof GreenFood) pointie = ((GreenFood)now).getPoints();
-					else if(now instanceof BlueFood) pointie = ((BlueFood)now).getPoints();
-					now.setFlag();
-					break;
-				}
-			}
-			
-			for(int j=0; j<pointie; j++)
-				snake.add();*/
-
+			//If all the food is eaten, make some new food
 			if(food.isEaten())
 				food.refreshList();
 
 			food.draw();
 
+			//Create the boxes to partition the space
 			Borders.createBox(0,0,64,48);
 			Borders.createBox(640,0,26,48);
 
 
-
+			//Draw the scoreboard
 			MenuOptions.ScoreBoard(snake.getSize(), System.currentTimeMillis() - MenuOptions.startTime);
-
-			if(snake.intersects()) 
+			
+			//What happens if the snake hit's itself? The below code block of course!
+			if(snake.intersects(direction)) 
 			{
-				//WriteFile(snake.getSize(), System.currentTimeMillis() - MenuOptions.startTime);
+				HighScore.InsertScore(snake.getSize(), System.currentTimeMillis() - MenuOptions.startTime);
 				snake.loseLife();
 				if(snake.getLives()==0) snake.kill();
 				snake.discard();
 			}
 
-			Zen.flipBuffer();
-			Zen.sleep(100);
+			Zen.flipBuffer(); //flipbuffer to smooth the graphics refresh
+			Zen.sleep(100); //Essentially define the speed of the snake here
 		}
 	}
 
+	/**
+	 * Define the User Keyboard input as the game begins.
+	 * Notice the "&& direction!=X", where X is the current
+	 * orientation of the snake. This is so that the snake
+	 * cannot move backwards.
+	 * @return
+	 */
 	public static int setDirection() {
 		if(Zen.isVirtualKeyPressed(KeyEvent.VK_UP) && direction!=2) {
 			direction =0;
@@ -110,117 +114,6 @@ public class TheGame {
 			return 3;
 		}
 		return direction;
-	}
-
-	public static void WriteFile(int length, long time) {
-
-		boolean done = false;
-		String[] ScoreList = new String[10];
-		String[] TimeList = new String[10];
-		char[][] CharList = new char[10][];
-		int[] Scores = new int[10];
-		long[] Times = new long[10];
-
-
-
-		while(!TextIO.eof()){
-
-			TextIO.readFile("HighScore.txt");
-
-			for(int i = 0; i < 10 ; i++)
-			{
-				CharList[i] = TextIO.getln().toCharArray();
-				for(int j = 0; j < CharList[i].length; j++){
-
-					if((CharList[i][j] == '1' || CharList[i][j] == '2' || CharList[i][j] == '3' 
-						|| CharList[i][j] == '4' || CharList[i][j] == '5' || CharList[i][j] == '6' 
-							|| CharList[i][j] == '7' || CharList[i][j] == '8' || CharList[i][j] == '9') && !done)
-					{
-						ScoreList[i] = ScoreList[i] + CharList[i][j];
-					}
-
-					if(CharList[i][j] == ' ')
-					{
-						done = true;
-						for(int k = j; k < CharList[i].length; k++){
-
-							TimeList[i] = TimeList[i] + CharList[i][k];
-
-						}
-					}
-				}
-			}
-		}
-
-
-		for(int i = 0; i < 10; i++)
-		{
-			Times[i] = Integer.parseInt(TimeList[i]);
-		}
-
-		for(int i = 0; i < 10; i++)
-		{
-			Scores[i] = Integer.parseInt(ScoreList[i]);
-		}
-
-		for(int i = 0; i < 10; i++){
-			for(int j = 0; j < 10; j++){
-				if(Scores[i] > Scores[j])
-				{
-					int temp = Scores[i];
-					Scores[i] = Scores[j];
-					Scores[j] = temp;
-				}
-			}
-		}
-
-
-		for(int i = 0; i < 10; i++){
-			for(int j = 0; j < 10; j++){
-				if(Scores[i] == Scores[j])
-				{
-					if(Times[i] > Times[j])
-					{
-						long temp = Times[i];
-						Times[i] = Times[j];
-						Times[j] = temp;
-					}
-				}
-			}
-		}
-
-		int index=0;
-
-		for(int i=0; i<10; i++)
-			if(Scores[i]>length) {
-				index=i;
-				break;
-			}
-
-		int[] a = new int[10];
-		long[] b = new long[10];
-
-		a[index]=length;
-		b[index]=time;
-
-		for(int i=0; i<index; i++) {
-			System.arraycopy(Scores, 0, a, 0, index);
-			System.arraycopy(Times, 0, b, 0, index);
-		}
-		for(int i=index+1; i<10; i++) {
-			System.arraycopy(Scores, index, a, index+1, 10-index-1);
-			System.arraycopy(Times, index, b, index+1, 10-index-1);
-		}
-
-		Scores=a;
-		Times=b;
-
-
-		TextIO.writeFile("HighScore.txt");
-		for(int i = 0; i < 10; i++)
-		{
-			TextIO.putln("\n" + Scores[i] + " " + Times[i]);
-		}
 	}
 
 }

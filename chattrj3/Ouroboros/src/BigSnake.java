@@ -1,8 +1,16 @@
+/**
+ * A Class designed to implement all the methods regarding a snake.
+ * @author chattrj3, nayudu2, sgupta40
+ *
+ */
+
 public class BigSnake {
 	private Snake[] snake = new Snake[0];
 	private static int size=0; //Current length of the snake
 	private static int current=0; //Stores the index of the last snake object.
 	private static int lives = 1;
+	private static boolean first = true;
+
 	
 	/**
 	 * Creates a new Snake object and appends it to the end of the snake. The x- and y-coordinates
@@ -39,6 +47,9 @@ public class BigSnake {
 		}
 	}
 	
+	/**
+	 * A method for the end-game screen
+	 */
 	public void kill() {
 		
 		while(Zen.isRunning()){
@@ -47,7 +58,10 @@ public class BigSnake {
 			Zen.fillRect(0,0, Zen.getZenWidth(), Zen.getZenHeight());
 			Zen.setColor(255,255,255);
 			Zen.setFont("Lucida Sans-60");
-			Zen.drawText("GAME OVER", 350,150);
+			Zen.drawText("GAME OVER", 280,150);
+			Zen.setFont("Lucida Sans-30");
+			Zen.drawText("SNAKE LENGTH:", 240, 250);
+			Zen.drawText(""+size, 600,250);	
 		}
 	}
 	
@@ -91,13 +105,19 @@ public class BigSnake {
 	 * @return true, if the coordinates of the head match those of any other Snake in the array.
 	 */
 	
-	public boolean intersects() {
+	public boolean intersects(int a) {
 		Snake head = snake[0];
 		
-		for(int i=1; i<snake.length; i++)
-			if(head.getX()==snake[i].getX() && head.getY()==snake[i].getY())
-				return true;
-		
+		for(int i=1; i<snake.length; i++){
+			if(head.getX()==snake[i].getX() && head.getY()==snake[i].getY()){
+				if(a == 3 && first){
+					first = false;
+					return false;
+				}
+				
+					else return true;
+			}
+		}
 		return false;
 	}
 	
@@ -200,13 +220,21 @@ public class BigSnake {
 		lives++;
 	}
 	
+	/**
+	 * Decreases the number of lives the snake has by 1.
+	 */
 	public void loseLife() {
 		lives--;
 	}
 	
+	/**
+	 * Draw the lives on the screen, maximum lives being 3.
+	 * @param x
+	 * @param y
+	 */
 	public void drawLives(int x, int y) {
 
-		if(lives >= 5) lives = 5;
+		if(lives >= 3) lives = 3;
 		for(int i = 0; i < lives; i++){	
 			Zen.drawImage("Health Bar.png", x + (25*i), y);
 		}
