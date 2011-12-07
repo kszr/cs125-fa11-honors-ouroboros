@@ -1,7 +1,7 @@
 
 /**
  * Creates a list of different, randomly selected types of Food objects.
- * @author chattrj3, nayudu2
+ * @author chattrj3, nayudu2, sgupta40
  *
  */
 public class FoodList {
@@ -37,11 +37,10 @@ public class FoodList {
 	 * @return
 	 */
 	private static Food getRandomFoodObject(int a) {
-		int r = (int)(4*Math.random());
+		int r = (int)(3*Math.random());
 
 		if(r==0) return new RedFood(points.getX()[a], points.getY()[a]);
 		if(r==1) return new BlueFood(points.getX()[a], points.getY()[a]);
-		if(r==2) return new LifeFood(points.getX()[a], points.getY()[a]);
 		return new GreenFood(points.getX()[a], points.getY()[a]);
 	}
 
@@ -56,6 +55,11 @@ public class FoodList {
 		return true;
 	}
 	
+	/**
+	 * Return the snake object if the snake has eaten
+	 * @param s
+	 * @return
+	 */
 	public Food eaten(Snake s) {
 		for(int i=0; i<omega.length; i++)
 			if(omega[i].isEaten(s.getX(), s.getY()))
@@ -64,10 +68,15 @@ public class FoodList {
 		return null;
 		
 	}
-
+	
+	/**
+	 * Set the corresponding isEaten point to true or false if the snake has eaten
+	 * @param x
+	 * @param y
+	 */
 	public void setEaten(int x, int y) {
 		for(int i=0; i<size; i++)
-			if(Math.abs(x-points.getX()[i])<=20 && Math.abs(y-points.getY()[i])<=20) {
+			if(Math.abs(x-points.getX()[i])<=21 && Math.abs(y-points.getY()[i])<=21) {
 				isEaten[i]=true;
 				break;
 			}

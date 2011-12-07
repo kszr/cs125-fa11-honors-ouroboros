@@ -1,3 +1,4 @@
+//UIUC CS125 FALL 2011 MP. File: Zen.java, CS125 Project: Challenge6-RecursionSee, Version: 2011-10-29T09:54:52-0500.251315000
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Cursor;
@@ -41,9 +42,6 @@ import javax.swing.SwingUtilities;
  * design choices - The design decisions (such as using class methods) is there
  * to simplify common use cases. This code is supplied 'as is' and no warranty
  * is provided.
- * 
- * Note the source code is not intended to be useful for novice programmers.
- * See the examples instead.
  * 
  * This code is copyright but free to use. It is provided under the scripts are
  * provided under the "Attribution Creative Commons License"
@@ -119,7 +117,9 @@ public class Zen extends JApplet {
 	public static void closeWindow() {
 		getInstanceFromThread().closeWindow();
 	}
-
+	public static void resetClick(){
+		getInstanceFromThread().resetClick();
+	}
 	public static String getAboutMessage() {
 		return "Zen Graphics (version 0.13) Copyright Lawrence Angrave, February 2010";
 	}
@@ -139,7 +139,7 @@ public class Zen extends JApplet {
 	public static int getMouseClickX() {
 		return getInstanceFromThread().getMouseClickX();
 	}
-
+	
 	public static int getMouseClickY() {
 		return getInstanceFromThread().getMouseClickY();
 	}
@@ -280,7 +280,7 @@ public class Zen extends JApplet {
 			}
 
 			public Object getTransferData(DataFlavor flavor)
-					throws UnsupportedFlavorException, IOException {
+			throws UnsupportedFlavorException, IOException {
 				if (!DataFlavor.imageFlavor.equals(flavor)) {
 					throw new UnsupportedFlavorException(flavor);
 				}
@@ -304,12 +304,12 @@ public class Zen extends JApplet {
 	/* Returns a buffered image from the system clipboard */
 	public static BufferedImage getClipboardImage() {
 		Transferable t = Toolkit.getDefaultToolkit().getSystemClipboard()
-				.getContents(null);
+		.getContents(null);
 
 		try {
 			if (t != null && t.isDataFlavorSupported(DataFlavor.imageFlavor)) {
 				BufferedImage img = (BufferedImage) t
-						.getTransferData(DataFlavor.imageFlavor);
+				.getTransferData(DataFlavor.imageFlavor);
 				return img;
 			}
 		} catch (Exception e) {
@@ -375,6 +375,13 @@ public class Zen extends JApplet {
 				sleep(250);
 		}
 
+		public void resetClick() {
+			// TODO Auto-generated method stub
+			mouseClickX = 0;
+			mouseClickY = 0;
+			
+		}
+
 		public BufferedImage getWindowScreenShot() {
 			synchronized (Zen.this) {
 				BufferedImage img = new BufferedImage(getZenWidth(),
@@ -430,12 +437,12 @@ public class Zen extends JApplet {
 
 		public boolean isKeyPressed(char key) {
 			return key >= 0 && key < keyPressed.length ? keyPressed[key]
-					: false;
+			                                                        : false;
 		}
 
 		public boolean isVirtualKeyPressed(int keyCode) {
 			return keyCode >= 0 && keyCode < virtualKeyPressed.length ? virtualKeyPressed[keyCode]
-					: false;
+			                                                                              : false;
 		}
 
 		public boolean isRunning() {
@@ -446,7 +453,7 @@ public class Zen extends JApplet {
 			// getSingleton(); // ensure instance created
 			while (g == null) {
 				System.err
-						.println("Odd... graphics not yet ready! Sleeping...");
+				.println("Odd... graphics not yet ready! Sleeping...");
 				sleep(1000); // race-condition hack ; should never happen if the
 				// container is correctly implemented
 			}
@@ -501,6 +508,7 @@ public class Zen extends JApplet {
 				paintWindowImmediately();
 		}
 
+		
 		public void drawArc(int x, int y, int width, int height,
 				int startAngle, int arcAngle) {
 			getBufferGraphics().drawArc(x, y, width, height, startAngle,
@@ -607,8 +615,8 @@ public class Zen extends JApplet {
 			if (!GraphicsEnvironment.isHeadless()) {
 				try {
 					GraphicsConfiguration config = GraphicsEnvironment
-							.getLocalGraphicsEnvironment()
-							.getDefaultScreenDevice().getDefaultConfiguration();
+					.getLocalGraphicsEnvironment()
+					.getDefaultScreenDevice().getDefaultConfiguration();
 					backImageBuffer = config.createCompatibleImage(width,
 							height);
 					frontImageBuffer = config.createCompatibleImage(width,
@@ -643,7 +651,7 @@ public class Zen extends JApplet {
 
 						public void run() {
 							frame
-									.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+							.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 							setVisible(false);
 							// deadlocks:-( removeKeyListener(keyListener);
 							// removeMouseListener(mouseListener);
@@ -705,7 +713,7 @@ public class Zen extends JApplet {
 	private Image backImageBuffer, frontImageBuffer;
 	private JFrame frame; // When run as a Java Application we need a frame
 	private Map<String, BufferedImage> nameToImage = Collections
-			.synchronizedMap(new HashMap<String, BufferedImage>());
+	.synchronizedMap(new HashMap<String, BufferedImage>());
 
 	private boolean stretchToFit;
 	private boolean[] keyPressed = new boolean[256];
@@ -769,8 +777,8 @@ public class Zen extends JApplet {
 	@Override
 	public final void start() {
 		master
-				.createBuffers(bufferSize.width, bufferSize.height,
-						bufferOptions);
+		.createBuffers(bufferSize.width, bufferSize.height,
+				bufferOptions);
 		isRunning = true;
 		if (mustBeAnWebApplet) {
 			mainThreadForWebApplet = new Thread("main") {
@@ -784,7 +792,7 @@ public class Zen extends JApplet {
 						String classNameToRunForApplet = getParameter(paramKey);
 						if (classNameToRunForApplet == null) {
 							String mesg = paramKey
-									+ " parameter is not set; where is your main method?";
+							+ " parameter is not set; where is your main method?";
 							System.err.println(mesg);
 							setFont("Courier-12");
 							drawText(mesg, 0, 10);
@@ -910,14 +918,16 @@ public class Zen extends JApplet {
 	private MouseListener mouseListener = new MouseAdapter() {
 		@Override
 		public void mouseClicked(MouseEvent me) {
+
 			if (windowWidth == 0 || windowHeight == 0)
 				return; // no display window yet
-			mouseClickX = (stretchToFit ? (int) (0.5 + me.getX()
-					* bufferSize.width / (double) windowWidth) : me.getX()
-					- paintAtX);
-			mouseClickY = (stretchToFit ? (int) (0.5 + me.getY()
-					* bufferSize.height / (double) windowHeight) : me.getY()
-					- paintAtY);
+				
+				mouseClickX = (stretchToFit ? (int) (0.5 + me.getX()
+						* bufferSize.width / (double) windowWidth) : me.getX()
+						- paintAtX);
+				mouseClickY = (stretchToFit ? (int) (0.5 + me.getY()
+						* bufferSize.height / (double) windowHeight) : me.getY()
+						- paintAtY);
 			mouseClickTime = me.getWhen();
 		}
 
@@ -938,5 +948,4 @@ public class Zen extends JApplet {
 			mouseMoved(e);
 		}
 	}; // MouseMotionListener
-
 };// End of class

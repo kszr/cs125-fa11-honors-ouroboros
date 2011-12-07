@@ -1,24 +1,41 @@
-
+/**
+ * A Class defines all GUI of the game, it contains:-
+ * --Menu Screen
+ * --Help Screen
+ * --High Score Screen
+ * --Choose your avatar Screen
+ * --Scoreboard, Time Print
+ * @author chattrj3, nayudu2, sgupta40
+ *
+ */
 public class MenuOptions {
 
-	public static long startTime;
-
-	public static boolean Menu() 
+	public static long startTime; //The time at which the game begins, the snake begins to move.
+	
+	/**
+	 * This method defines the starting screen, i.e The Menu Screen.
+	 * @return
+	 */
+	public static boolean Menu(/*int[] ScoreArray, long[] TimeArray*/) 
 	{
 
 		String Title = "OUROBOROS";
 		String CatchFlow  = "";
-		int GetClickX = Zen.getMouseClickX(); // Define Mouse Interface.
-		int GetClickY = Zen.getMouseClickY();
-		int GetPosX = Zen.getMouseX();
-		int GetPosY = Zen.getMouseY();
-		int i = 0;
-		boolean done = false;
-		boolean nowdone = false;
+		int GetClickX = Zen.getMouseClickX(); // Mouse Click Variable, X
+		int GetClickY = Zen.getMouseClickY(); // Mouse Click Variable, Y
+		int GetPosX = Zen.getMouseX(); // Mouse Movement Variable, X
+		int GetPosY = Zen.getMouseY(); // Mouse Movement Variable, Y
+		int i = 0; // A counter variable. declared here to avoid scope problems.
+		
+		boolean done = false; // A boolean variable to stop the title from continuously flashing.
+		
+		boolean nowdone = false; // One way flag, stops the title and starts the option selected.
 
 		while (Zen.isRunning() && !nowdone) 
 		{
-
+			/**
+			 * A while loop to make the Title Flash.
+			 */
 			while(!done)
 			{
 				CatchFlow = "";
@@ -38,6 +55,9 @@ public class MenuOptions {
 				done = true;
 			}
 
+			/*
+			 * Draw the Menu Screen, with options.
+			 */
 			Zen.setColor(255-(10*i), 255, 255+(10*i));
 			Zen.setFont("Showcard Gothic-60");
 			Zen.drawText(Title, 260, 50);
@@ -49,12 +69,17 @@ public class MenuOptions {
 			Zen.drawText("EXIT" , 265+110, 400);
 
 
-
+			/**
+			 * Refresh mouse positions.
+			 */
 			GetPosX = Zen.getMouseX();
 			GetPosY = Zen.getMouseY();
 			GetClickY = Zen.getMouseClickY();
 			GetClickX = Zen.getMouseClickX();
 
+			/*
+			 * Highlight the text as the mouse hovers over the area.
+			 */
 			if((GetPosX >= 0 && GetPosX <= Zen.getZenWidth()) && (GetPosY >= 150 && GetPosY <= 200)) 
 			{
 				Zen.setColor(0,250,154);
@@ -87,6 +112,10 @@ public class MenuOptions {
 
 			}
 
+			/*
+			 * Define actions as the user clicks on the desired options.
+			 * Each if block corresponds to a particular button on the menu.
+			 */
 			if((GetClickX >= 0 && GetClickX <= Zen.getZenWidth()) && (GetClickY >= 150 && GetClickY <= 200))
 			{
 				nowdone = true;
@@ -97,11 +126,13 @@ public class MenuOptions {
 				while(!Help());
 			}
 
-
+			if((GetClickX >= 0 && GetClickX <= Zen.getZenWidth()) && (GetClickY >= 290 && GetClickY <= 340)) 
+			{
+				while(!HighScore.DisplayScores());
+			}
+			
 			if((GetClickX >= 0 && GetClickX <= Zen.getZenWidth()) && (GetClickY >= 350 && GetClickY <= 400))
 			{
-				//String a = "1";
-				//int b = a.charAt(1); // Throw an exception when this is called.
 				Zen.closeWindow();
 				break;
 			}
@@ -109,38 +140,62 @@ public class MenuOptions {
 			Zen.flipBuffer();
 
 		}
-		startTime=System.currentTimeMillis();
-		return nowdone;
+		
+		startTime = System.currentTimeMillis();
+		return nowdone; //Return the Flag every time we run through this block.
 	}
 
+	/**
+	 * This Method block defines the help screen. The help screen provides
+	 * information regarding the game, how to play and what each block means.
+	 * @return
+	 */
 	public static boolean Help(){
 
-		boolean rdone = false;
-		String HelpText = "HELP";
+		Zen.resetClick();
+		boolean rdone = false; //One way flag.
+		
 		String HelpText1 = "++ Use the arrow keys to move the snake towards food.";
 		String HelpText2 = "++ The Snake grows depending on the type of food he eats.";
 		String HelpText3 = "++ The Game is over when the Snake hit's itself. Survive as long as possible!";
 
-		int GetClickX = Zen.getMouseClickX(); // Define Mouse Interface.
-		int GetClickY = Zen.getMouseClickY();
+		int GetClickX = Zen.getMouseClickX(); // Mouse Click Variable, X
+		int GetClickY = Zen.getMouseClickY(); // Mouse Click Variable, Y
+		int GetPosX = Zen.getMouseX(); // Mouse Movement Variable, X
+		int GetPosY = Zen.getMouseY(); // Mouse Movement Variable, Y
 
 		Zen.setColor(0,0,0);
 		Zen.fillRect(0,0,Zen.getZenWidth(), Zen.getZenHeight());
 
 		while(Zen.isRunning() && !rdone){
+			
+			GetPosX = Zen.getMouseX();
+			GetPosY = Zen.getMouseY();
 
 			Zen.setColor(255,255,255);
 			Zen.setFont("Showcard Gothic-60");
-			Zen.drawText(HelpText, 200, 50);
+			Zen.drawText("HELP", 370, 50);
 			Zen.setColor(255,255,255);
 			Zen.setFont("Lucida Sans-20");
 			Zen.drawText(HelpText1, 10, 100);
 			Zen.drawText(HelpText2, 10,150);
 			Zen.drawText(HelpText3, 10, 200);
-			Zen.drawText("BACK TO MENU", 700, 340);
+			Zen.setFont("Lucida Sans-30");
+			Zen.drawText("BACK TO MENU", 350, 340);
 			GetClickX = Zen.getMouseClickX();
 			GetClickY = Zen.getMouseClickY();
-			if((GetClickX >= 700 && GetClickX <= 900) && (GetClickY >= 300 && GetClickY <= 340))
+			
+			if((GetPosX >= 350 && GetPosX <= 900) && (GetPosY >= 300 && GetPosY <= 340))
+			{
+				Zen.setColor(0,255,155);
+				Zen.fillRect(0, 300, Zen.getZenWidth(), 40);
+				Zen.setColor(255,0,0);
+				Zen.setFont("Lucida Sans-30");
+				Zen.drawText("BACK TO MENU", 350, 340);
+				
+			}
+			
+			if((GetClickX >= 350 && GetClickX <= 900) && (GetClickY >= 300 && GetClickY <= 340))
 			{
 				rdone = true;
 			}
@@ -148,11 +203,16 @@ public class MenuOptions {
 
 		}
 
-
+		Zen.resetClick();
 		return rdone;
 
 	}
-
+	
+	/**
+	 * This method block draws the score as the game progresses.
+	 * @param length
+	 * @param TIME
+	 */
 	public static void ScoreBoard(int length, long TIME){
 
 
@@ -165,6 +225,11 @@ public class MenuOptions {
 
 	}
 
+	/**
+	 * This method block draws the time as the game progresses.
+	 * @param TIME
+	 * @return
+	 */
 	public static String DrawTime(long TIME){
 
 		int seconds = (int)TIME%60;
@@ -180,26 +245,31 @@ public class MenuOptions {
 
 	}
 
+	/**
+	 * Method defining the "Choose Your Avatar" screen , which occurs after the user
+	 * clicks on the "Play Game" button. The method returns an int value corresponding
+	 * to the snake the user clicked on.
+	 * @return
+	 */
 	public static int SnakeChoice(){
 
-
-		int isDone = -1;
-
-
-
+		int isDone = -1; //One way flag.
 
 		while(Zen.isRunning() && isDone == -1)
 		{
+			// Get mouse variables.
 			int GetPosX = Zen.getMouseX();
 			int GetPosY = Zen.getMouseY();
-			int GetClickX=Zen.getMouseClickX();
-			int GetClickY=Zen.getMouseClickY();
+			int GetClickX = Zen.getMouseClickX();
+			int GetClickY = Zen.getMouseClickY();
 
-			Zen.drawText("CHOOSE AN AVATAR", 300, 40);
+			//Draw the images on the screen.
+			Zen.setColor(255,255,255);
+			Zen.drawText("CHOOSE AN AVATAR", 210, 40);
 			Zen.drawImage("SNAKE_GREEN.png", 150,60);
 			Zen.drawImage("SNAKE_BLUE.png", 150, 240);
 
-
+			//Define interaction with the user according to the position of the mouse.
 			if((GetPosX >= 150 && GetPosX <= 750) && (GetPosY >= 60  && GetPosY <= 210))
 			{
 				Zen.drawImage("SNAKE_GREEN_SEL.png", 150, 60);
@@ -209,6 +279,8 @@ public class MenuOptions {
 			{
 				Zen.drawImage("SNAKE_BLUE_SEL.png", 150, 240);
 			}
+			
+			//Define interaction with the user as the user clicks on a snake.
 			if((GetClickX >= 150 && GetClickX <= 750) && (GetClickY >= 70 && GetClickY <= 210))
 			{
 				isDone = 0;
@@ -220,9 +292,7 @@ public class MenuOptions {
 				return 1;
 			}
 
-			//GetClickX = Zen.getMouseClickX();
-			//GetClickY = Zen.getMouseClickY();
-
+			//Changes the screens.
 			Zen.flipBuffer();
 
 		}
@@ -230,6 +300,12 @@ public class MenuOptions {
 
 	}
 	
+	/**
+	 * Useless method, was initially made so the user unknowingly
+	 * reset the value of the mouse click values. The method is obsolete
+	 * now as we defined a "resetClick()" method in Zen.java which resets
+	 * the mouse click variables.
+	 */
 	public static void DrawInter(){
 		
 			
@@ -246,6 +322,49 @@ public class MenuOptions {
 				break;
 			}
 		}
+
+	}
+	
+	
+	public static boolean HighScore(int[] sizex, long[] timex){
+		
+		int GetPosX = Zen.getMouseX();
+		int GetPosY = Zen.getMouseY();
+		int GetClickX = Zen.getMouseClickX();
+		int GetClickY = Zen.getMouseClickY();
+		
+		boolean isDone = false;
+
+		while(Zen.isRunning() && !isDone){
+			
+			GetPosX = Zen.getMouseX();
+			GetPosY = Zen.getMouseY();
+			GetClickY = Zen.getMouseClickY();
+			GetClickX = Zen.getMouseClickX();
+
+				Zen.flipBuffer();
+				Zen.setColor(255,255,255);
+				Zen.setFont("Lucida San-20");
+				for(int i = 0; i < sizex.length; i++)
+					Zen.drawText(i+" "+sizex[i]+"  "+timex[i], 80, 22*i);
+				
+				if((GetPosX >= 350 && GetPosX <= 900) && (GetPosY >= 360 && GetPosY <= 400))
+				{
+					Zen.setColor(0,255,155);
+					Zen.fillRect(0, 300, Zen.getZenWidth(), 40);
+					Zen.setColor(255,0,0);
+					Zen.setFont("Lucida Sans-30");
+					Zen.drawText("BACK TO MENU", 350, 400);
+					
+				}
+				
+				if((GetClickX >= 350 && GetClickX <= 900) && (GetClickY >= 360 && GetClickY <= 400))
+				{
+					isDone = true;
+				}
+		}
+		return isDone;
+
 
 	}
 	
