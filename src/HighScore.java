@@ -96,24 +96,13 @@ public class HighScore {
 					int temp = HighSize[i];
 					HighSize[i] = HighSize[j];
 					HighSize[j] = temp;
+					long timtemp = HighTime[i];
+					HighTime[i] = HighTime[j];
+					HighTime[j] = timtemp;
 				}
 			}
 		}
 		
-		//Sort the Times, but ensure to not mix up the times.
-		for(int i = 0; i < size; i++)
-		{
-			for(int j = 0; j < size; j++){
-				if(HighSize[i] == HighSize[j]){ //Prevents mix-up
-					if(HighTime[i] > HighTime[j]){
-						long temp = HighTime[i];
-						HighTime[i] = HighTime[j];
-						HighTime[j] = temp;
-					}
-				}
-				
-			}
-		}
 		
 		TextIO.writeFile("HighScore.txt");
 		for(int i = 0; i < size; i++){
@@ -128,50 +117,51 @@ public class HighScore {
 	 */
 	public static void InsertScore(int len, long time){
 		
-		int index = 0;
-		//for loop to find a point of insertion of the new data.
-		for(int i = 0; i < size; i++){
-			if(HighSize[i] > len)
-				{
-				index = i;
-				break;
-				}
+		if(size == 0)
+		{
+			TextIO.writeFile("HighScore.txt");
+			TextIO.putln(len + " " + time);
 		}
-		
-		//Temporary Arrays
-		int[] atemp = new int[size+1];
-		long[] btemp = new long[size+1];
-		
-		//Put the new data in
-		for(int i = 0, j = 0; j < size; i++,j++){
-			if(i == index){
-				atemp[i] = len;
-				i++;
+		else
+		{
+			int index = 0;
+			//for loop to find a point of insertion of the new data.
+			for(int i = 0; i < size; i++){
+				if(HighSize[i] > len)
+				{
+					index = i;
+					break;
 				}
-			
-			atemp[i] = HighSize[j];
 			}
-		//Put the new data in
-		for(int i = 0,j=0; j < size; i++,j++){
-			if(i == index){
-				btemp[i] = time;
-				i++;
+
+			//Temporary Arrays
+			int[] atemp = new int[size+1];
+			long[] btemp = new long[size+1];
+
+			//Put the new data in
+			for(int i = 0, j = 0; j < size; i++,j++){
+				if(i == index){
+					atemp[i] = len;
+					btemp[i] = time;
+					i++;
 				}
-			
-			btemp[i] = HighTime[j];
+
+				atemp[i] = HighSize[j];
+				btemp[i] = HighTime[j];
 			}
-		
-		//Redeclare and Reassign
-		size++;
-		HighSize = new int[size];
-		HighTime = new long[size];
-		HighSize = atemp;
-		HighTime = btemp;
-		
-		//Write the contents to the file
-		TextIO.writeFile("HighScore.txt");
-		for(int i = 0; i < size; i++){
-			TextIO.putln(HighSize[i] + " " + HighTime[i]);
+
+			//Redeclare and Reassign
+			size++;
+			HighSize = new int[size];
+			HighTime = new long[size];
+			HighSize = atemp;
+			HighTime = btemp;
+
+			//Write the contents to the file
+			TextIO.writeFile("HighScore.txt");
+			for(int i = 0; i < size; i++){
+				TextIO.putln(HighSize[i] + " " + HighTime[i]);
+			}
 		}
 		
 	}
@@ -220,9 +210,19 @@ public class HighScore {
 			Zen.setFont("Lucida Sans-30");
 			Zen.drawText("BACK TO MENU", 350, 340);
 			
-			for(int i = 0; i < size; i++){
-				Zen.drawText(""+HighSize[i],240,150+(30*i));
-				Zen.drawText(""+HighTime[i],550,150+(30*i));
+			if(size < 5)
+			{
+				for(int i = 0; i < size; i++){
+					Zen.drawText(""+HighSize[i],240,150+(30*i));
+					Zen.drawText(""+HighTime[i],550,150+(30*i));
+				}
+			}
+			else
+			{
+				for(int i = 0; i < 5; i++){
+					Zen.drawText(""+HighSize[i],240,150+(30*i));
+					Zen.drawText(""+HighTime[i],550,150+(30*i));
+				}
 			}
 			
 			GetClickX = Zen.getMouseClickX();
